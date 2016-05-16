@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>我的第一段Html</h1>
+<p id = "demo1">点击后变成啦啦啦</p>
+<script>
+    
+
+function myFunction1(){
+  x = document.getElementById("demo1");
+  x.innerHTML = "啦啦啦";
+}
+
+
+</script>
+<button type = "button" onclick = "myFunction1()">点击这里1</button>
+  <body>
+</html>
+
+
+
+<html>
+    <body>
+        <h2>我的WebVIewJavascriptBridge使用</h2>
+        <p>点击下面的按钮,将由js触发oc事件</p>
+        
+        <script>
+            
+            //必要设置1
+            function setupWebViewJavascriptBridge(callback) {
+                if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
+                if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
+                window.WVJBCallbacks = [callback];
+                var WVJBIframe = document.createElement('iframe');
+                WVJBIframe.style.display = 'none';
+                WVJBIframe.src = 'wvjbscheme://__BRIDGE_LOADED__';
+                document.documentElement.appendChild(WVJBIframe);
+                setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0)
+            }
+        
+        //必要设置2
+        setupWebViewJavascriptBridge(function(bridge) {
+                 
+                 //2.1 js回调 (oc向js发送消息后 , js返回信息)
+                 bridge.registerHandler('callHandler', function(data, responseCallback) {
+                                        
+                var responseData = { 'Javascript Says':'I am Js, CallBack Now!!!!!' }
+                responseCallback(responseData,data)
+              
+                })
+                 
+                 
+                 //2.2 js按钮 (js原生按钮,点击后触发oc事件)
+                 var callbackButton = document.getElementById('Myjsbuttons').appendChild(document.createElement('button'))
+                 callbackButton.innerHTML = 'js按钮==>点击即可调用oc方法'
+                 callbackButton.onclick = function(e) {
+                 e.preventDefault()
+                 bridge.callHandler('registerHandler', {'信息来源:': '我是js,我调用了oc方法(弹出一个UIAlert)'}, function(response) {
+                                    })
+                 }
+                                     
+                                     
+                                     
+                var callbackButton = document.getElementById('MyjsButtons2').appendChild(document.createElement('button'))
+                 callbackButton.innerHTML = 'js按钮2 ==>点击即可调用oc方法'
+                 callbackButton.onclick = function(){
+                 bridge.callHandler('registerHandler2',{'信息来源:':'我是js,我调用了oc方法(修改lab的文字)'},function(response){
+                                    })
+                 }
+                 
+                 
+            })
+   
+        </script>
+        
+         <div id='Myjsbuttons'></div>
+         
+         <div id='MyjsButtons2'></div>
+         
+    </body>
+</html>
+
